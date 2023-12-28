@@ -1,5 +1,5 @@
 {
-  "name": "FarmIc",
+  "name": "farm_ic",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -10,12 +10,14 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/drawer": "^6.6.6",
     "@react-navigation/native": "^6.1.9",
     "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.6.3",
     "react": "18.2.0",
     "react-native": "0.73.1",
+    "react-native-auto-route": "^0.3.0",
     "react-native-gesture-handler": "^2.14.0",
     "react-native-reanimated": "^3.6.1",
     "react-native-safe-area-context": "^4.8.2",
