@@ -3,7 +3,7 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 
 import thunk, { ThunkMiddleware } from 'redux-thunk';
-import drawerSlice from '../components/drawer.slice';
+import drawerSlice from './drawer.slice';
 
 const store = configureStore({
     reducer: {
