@@ -1,8 +1,22 @@
+import { createDrawerNavigator, type DrawerNavigationEventMap, type DrawerNavigationOptions } from '@react-navigation/drawer';
+import type { DrawerNavigationState, ParamListBase } from '@react-navigation/native';
+import { createNavigator } from 'react-native-auto-route';
+
 import React from 'react';
-import Drawer from '../../../src/navigator/drawer';
 import CustomDrawer from '../../../src/components/CustomDrawer';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useTheme } from 'react-native-paper';
+
+const DrawerNavigator = createDrawerNavigator().Navigator;
+
+export const Drawer = createNavigator<
+    DrawerNavigationState<ParamListBase>,
+    DrawerNavigationOptions,
+    DrawerNavigationEventMap,
+    Omit<React.ComponentProps<typeof DrawerNavigator>, 'id' | 'children'> & {
+        children?: React.ReactNode;
+    }
+>(DrawerNavigator);
 
 const DrawerLayout = () => {
     const theme = useTheme();

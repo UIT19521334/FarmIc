@@ -8,11 +8,11 @@ import { StatusBar, Text, View } from 'react-native';
 
 const Setup = () => {
     const darkMode = useSelector((state: RootState) => state.global.darkMode);
-    const theme = darkMode ? {...MD3DarkTheme, colors: darkScheme.colors} : {...MD3LightTheme, colors: lightScheme.colors}
-    const { appTheme }  :any  = adaptNavigationTheme({reactNavigationLight: DefaultTheme})
+    const theme = darkMode ? { ...MD3DarkTheme, colors: darkScheme.colors } : { ...MD3LightTheme, colors: lightScheme.colors };
+    const { appTheme }: any = adaptNavigationTheme({ reactNavigationLight: DefaultTheme });
     return (
         <PaperProvider theme={theme}>
-            <RouterRoot theme={appTheme}/>
+            <RouterRoot theme={appTheme} />
         </PaperProvider>
     );
 };

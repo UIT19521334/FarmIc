@@ -87,3 +87,5 @@ export const darkScheme = {
         backdrop: 'rgba(57, 47, 36, 0.4)',
     },
 };
+
+export type AppTheme = typeof lightScheme;

@@ -17,6 +17,9 @@ export default function Home() {
             <Button buttonColor={theme.colors.onPrimary} onPress={() => router.push('picker')}>
                 Open modal
             </Button>
+            <Button buttonColor={theme.colors.onPrimary} onPress={() => router.navigate('login/Login')}>
+                Sign Out
+            </Button>
             <Button onPress={() => router.setOptions({ title: 'Updated!' })}>Update the title</Button>
             <Button onPress={() => dispatch(fetchDrawer())}>Fetch drawer</Button>
             <Button onPress={() => dispatch(toggleColorScheme())}>Change theme</Button>
@@ -24,6 +27,6 @@ export default function Home() {
     );
 }
 
-export const screenOptions = {
-    title: 'Home',
-};
+// export const screenOptions = {
+//     title: 'Home',
+// };

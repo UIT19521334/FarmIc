@@ -1,9 +1,32 @@
-import { Tabs, useRouter } from 'react-native-auto-route';
+import { Redirect, Tabs, useRouter } from 'react-native-auto-route';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTheme } from 'react-native-paper';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../src/redux/store';
+import { Text, View } from 'react-native';
+import { useNavigation } from 'react-native-auto-route';
+import Link from 'react-native-auto-route';
 
 export default function Layout() {
     const theme = useTheme();
+    const navigation = useNavigation();
+    const router = useRouter();
+    const loading = useSelector((state: RootState) => state.global.loading);
+    const userToken = useSelector((state: RootState) => state.global.userToken);
+    
+    if (loading) {
+        return (
+            <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                <Text>Loading...</Text>
+            </View>
+        )
+    }
+
+    if (!userToken) {
+        // return <Redirect to="login/Login"/>
+        router.navigate('login/Login');
+    }
+
     return (
         <Tabs
             initialRouteName="(drawer)" // initialRouteName is directory name or filename
