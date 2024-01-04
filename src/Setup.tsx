@@ -4,6 +4,7 @@ import { PaperProvider, MD3DarkTheme, MD3LightTheme, adaptNavigationTheme } from
 import { useSelector } from 'react-redux';
 import { RootState } from './redux/store';
 import { darkScheme, lightScheme } from './themes/theme';
+import { StatusBar, Text, View } from 'react-native';
 
 const Setup = () => {
     const darkMode = useSelector((state: RootState) => state.global.darkMode);

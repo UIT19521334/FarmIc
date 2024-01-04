@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, StatusBar } from 'react-native';
 import React from 'react';
 import {
     DrawerContentComponentProps,
@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { IDrawer, ISubmenu } from '../types';
 import { Button, List } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
 
 const CustomDrawer = (props: DrawerContentComponentProps) => {
     const drawerList = useSelector(
@@ -17,10 +18,12 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
     const [expanded, setExpanded] = React.useState(true);
 
     const handlePress = () => setExpanded(!expanded);
+    const theme = useTheme()
+	const darkMode = useSelector((state: RootState) => state.global.darkMode);
     return (
-        <View style={{ flex: 1 }}>
-            <DrawerContentScrollView {...props}>
-                <DrawerItemList {...props} />
+        <View style={{ flex: 1, backgroundColor: theme.colors.onPrimary }}>
+			<StatusBar translucent backgroundColor="rgba(0,0,0,0)" barStyle={darkMode ? "light-content" : "dark-content"}/>
+            <DrawerContentScrollView {...props}> 
                 <List.Section>
                     {drawerList.map((item: IDrawer, index: number) => (
                         <List.Accordion
@@ -31,7 +34,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                             )}>
                             {item.SubMenu.map(
                                 (submenu: ISubmenu, index: number) => (
-                                    <List.Item title={submenu.MenuName} />
+                                    <List.Item key={index} title={submenu.MenuName} />
                                 ),
                             )}
                         </List.Accordion>
