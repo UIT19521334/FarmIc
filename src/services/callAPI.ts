@@ -14,10 +14,21 @@
 //     dispatch(getUserFailure(error.message));
 //   }
 // };
-import { View, Text } from 'react-native'
+import { View, Text, Alert } from 'react-native'
 import React from 'react'
 
-export const callAPI = () => {
-  console.log("AAA");
+export const callAPI = async (URL: string) => {
+  return fetch(URL, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      // Authorization: ,
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((res) => res.json())
+    .catch((err: any) => { 
+      Alert.alert(err)
+     })
 }
 

@@ -1,23 +1,59 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { IDrawer, ISubmenu } from "../types";
+import { AppDispatch } from "./store";
+import { convertToGroupedList } from "../utils/drawer.utils";
+import { callAPI } from "../services/callAPI";
 
 const drawerSlice = createSlice({
     name: 'drawer',
-    initialState: [
-        {id: 1, name: 'detail/screen1', active: false, priority: 'Medium1'},
-        {id: 2, name: 'detail/screen2', active: false, priority: 'Medium2'},
-        {id: 3, name: 'detail/screen3', active: false, priority: 'Medium3'},
-        {id: 4, name: 'detail/screen4', active: false, priority: 'Medium4'}
-    ],
+    initialState: {
+        status: "",
+        subdivision: "",
+        central: "",
+        drawerList: [
+            {
+                MenuGroup: "MASTER",
+                SubMenu: [
+                    {
+                        Username: null,
+                        MenuID: "101",
+                        MenuName: "Goods Group",
+                        MenuGroup: "MASTER",
+                        MenuIcon: "ViewGrid",
+                        MenuLink: "FARM_IC.Master.View.ucGroupGood",
+                        OrderIndex: null,
+                        CreatedTime: null
+                    },
+                    {
+                        Username: null,
+                        MenuID: "102",
+                        MenuName: "Good",
+                        MenuGroup: "MASTER",
+                        MenuIcon: "Puzzle",
+                        MenuLink: "FARM_IC.Master.View.ucGood",
+                        OrderIndex: null,
+                        CreatedTime: null
+                    }
+
+                ]
+            },
+        ],
+    },
     reducers: {
-        addDrawer: (state, action) =>{
-            state.push(action.payload);
+        addDrawer: (state, action) => {
+            state.drawerList.push(action.payload);
         },
-        toogleDrawer: (state, action) => {
-            const current = state.find(todo => todo.id === action.payload);
-            if (current) {
-                current.active = !current.active;
-            }
+        changeDrawer: (state, action) => {
+            state.drawerList = action.payload;
         }
+    },
+    extraReducers: builder => {
+        builder.addCase(fetchDrawer.pending, (state, action) => {
+            state.status = 'loading';
+        }).addCase(fetchDrawer.fulfilled, (state, action: PayloadAction<any>) => {
+            state.drawerList = action.payload;
+            state.status = 'idle'
+        });
     }
 })
 
@@ -25,15 +61,20 @@ export default drawerSlice
 
 export const {
     addDrawer,
-    toogleDrawer
-  } = drawerSlice.actions;
+} = drawerSlice.actions;
 
-export function getDrawerList(drawer: any) { //thunk function - action
-    return function getDrawerListThunk(dispatch : any, getState : any) {
+export function getDrawerList(drawer: IDrawer) { //thunk function - action
+    return function getDrawerListThunk(dispatch: AppDispatch, getState: Function) {
         console.log('[getDrawerListThunk]', getState());
-        console.log({drawer});
-        drawer.name = 'Dat test middleware';
-        dispatch(drawerSlice.actions.addDrawer);
+        console.log(">>>", drawer);
+        drawer.MenuGroup = 'Dat test middleware';
+        dispatch(drawerSlice.actions.addDrawer(drawer));
         console.log('[getDrawerListThunk After]', getState());
     }
 }
+
+export const fetchDrawer = createAsyncThunk('drawer/fetchDrawer', async () => {
+    const res: any = await callAPI('https://supplysouth.japfa.com.vn:62150/api/PermissionService/GetMenuAccessOfUser?username=dat.nguyenducchi@japfa.com')
+    const data = convertToGroupedList(res)
+    return data;
+})

@@ -9,10 +9,7 @@ export default function Layout() {
       initialRouteName="(drawer)" // initialRouteName is directory name or filename
       screenOptions={({ route }) => ({
         // https://reactnavigation.org/docs/native-stack-navigator#props
-        headerStyle: {
-          backgroundColor: '#f4511e',
-        },
-        headerTintColor: '#fff',
+
         headerTitleStyle: {
           fontWeight: 'bold',
         },
