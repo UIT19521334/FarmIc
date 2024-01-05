@@ -17,9 +17,6 @@ class MainActivity : ReactActivity() {
   /**
   * Module to in stall auto router.
   */
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(null)
-  }
 
   /**
    * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]

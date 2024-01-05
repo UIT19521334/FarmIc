@@ -16,8 +16,11 @@
 // };
 import { View, Text, Alert } from 'react-native'
 import React from 'react'
+import store from '../redux/store'
 
-export const callAPI = async (URL: string) => {
+export const callAPI = async (endpoint: string) => {
+  const baseUrl = store.getState().global.baseUrl;
+  const URL = baseUrl + endpoint;
   return fetch(URL, {
     method: 'GET',
     headers: {

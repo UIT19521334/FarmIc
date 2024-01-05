@@ -3,6 +3,7 @@ import { IDrawer, ISubmenu } from "../types";
 import { AppDispatch } from "./store";
 import { convertToGroupedList } from "../utils/drawer.utils";
 import { callAPI } from "../services/callAPI";
+import { loadingGlobal } from "./global.slice";
 
 const drawerSlice = createSlice({
     name: 'drawer',
@@ -48,7 +49,7 @@ const drawerSlice = createSlice({
         }
     },
     extraReducers: builder => {
-        builder.addCase(fetchDrawer.pending, (state, action) => {
+        builder.addCase(fetchDrawer.pending, (state) => {
             state.status = 'loading';
         }).addCase(fetchDrawer.fulfilled, (state, action: PayloadAction<any>) => {
             state.drawerList = action.payload;
@@ -73,8 +74,11 @@ export function getDrawerList(drawer: IDrawer) { //thunk function - action
     }
 }
 
-export const fetchDrawer = createAsyncThunk('drawer/fetchDrawer', async () => {
-    const res: any = await callAPI('https://supplysouth.japfa.com.vn:62150/api/PermissionService/GetMenuAccessOfUser?username=dat.nguyenducchi@japfa.com')
+export const fetchDrawer = createAsyncThunk('drawer/fetchDrawer', async (_, thunkAPI) => {
+    thunkAPI.dispatch(loadingGlobal(true))
+    
+    const res: any = await callAPI('PermissionService/GetMenuAccessOfUser?username=dat.nguyenducchi@japfa.com')
     const data = convertToGroupedList(res)
+    thunkAPI.dispatch(loadingGlobal(false))
     return data;
 })
