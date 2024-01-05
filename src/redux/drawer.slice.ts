@@ -9,6 +9,7 @@ const drawerSlice = createSlice({
     name: 'drawer',
     initialState: {
         status: "",
+        message: "",
         subdivision: "",
         central: "",
         drawerList: [
@@ -46,6 +47,9 @@ const drawerSlice = createSlice({
         },
         changeDrawer: (state, action) => {
             state.drawerList = action.payload;
+        },
+        clearMessage: (state) => {
+            state.message = "";
         }
     },
     extraReducers: builder => {
@@ -53,7 +57,11 @@ const drawerSlice = createSlice({
             state.status = 'loading';
         }).addCase(fetchDrawer.fulfilled, (state, action: PayloadAction<any>) => {
             state.drawerList = action.payload;
-            state.status = 'idle'
+            state.status = 'success';
+            state.message = 'Loading drawer success'
+        }).addCase(fetchDrawer.rejected, (state, action) => {
+            state.status = 'failed'
+            state.message = action.error.message ? action.error.message : "Loading drawer failed"
         });
     }
 })
@@ -62,6 +70,7 @@ export default drawerSlice
 
 export const {
     addDrawer,
+    clearMessage
 } = drawerSlice.actions;
 
 export function getDrawerList(drawer: IDrawer) { //thunk function - action

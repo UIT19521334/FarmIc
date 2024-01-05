@@ -7,6 +7,10 @@ const globalSlice = createSlice({
         darkMode: false,
         userToken: undefined,
         loading: false,
+        toast: {
+            type: "success",
+            message: "",
+        },
         baseUrl: 'https://supplysouth.japfa.com.vn:62150/api/',
     },
     reducers: {
@@ -18,6 +22,9 @@ const globalSlice = createSlice({
         },
         loadingGlobal: (state, action) => {
             state.loading = action.payload
+        },
+        showToast: (state, action) => {
+            state.toast = action.payload
         }
     },
 })
@@ -27,7 +34,8 @@ export default globalSlice
 export const {
     toggleColorScheme,
     updateUserToken,
-    loadingGlobal
+    loadingGlobal,
+    showToast,
 } = globalSlice.actions;
 
 

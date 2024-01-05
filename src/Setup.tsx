@@ -1,5 +1,5 @@
 import React from 'react';
-import { PaperProvider, MD3DarkTheme, MD3LightTheme, adaptNavigationTheme } from 'react-native-paper';
+import { PaperProvider, MD3DarkTheme, MD3LightTheme, adaptNavigationTheme, Snackbar } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import { RootState } from './redux/store';
 import { darkScheme, lightScheme } from './themes/theme';
