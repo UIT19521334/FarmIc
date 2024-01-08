@@ -14,16 +14,17 @@ import CustomDrawer from '../components/CustomDrawer';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { View } from 'react-native';
+import { isEmpty } from 'lodash';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
 export default function AppNavigator() {
-    const userToken = useSelector((state: RootState) => state.global.userToken);
+    const user = useSelector((state: RootState) => state.global.user);
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {userToken ? <Stack.Screen name="MainScreen" component={TabNavigator} /> : <Stack.Screen name="Login" component={LoginScreen} />}
+                {!isEmpty(user) ? <Stack.Screen name="MainScreen" component={TabNavigator} /> : <Stack.Screen name="Login" component={LoginScreen} />}
             </Stack.Navigator>
         </NavigationContainer>
     );

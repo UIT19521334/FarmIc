@@ -13,3 +13,29 @@ export type ISubmenu = {
     OrderIndex: string | null;
     CreatedTime: string | null;
 };
+
+export type ISubDivision = {
+    SubDivisionID: string,
+    SubDivisionShortName: string,
+    SubDivisionDescription: string,
+    Factories: IFactory[]
+}
+
+export type IFactory = {
+    Username: string,
+    FactoryID: string,
+    FactoryName: string,
+    ConnString: string | null,
+    IsDefault: any, // data res = null so i don't know type
+    Order: any, // data res = null so i don't know type
+    SectionID: any, // data res = null so i don't know type
+    BusinessUnitID: string,
+    BusinessUnitShortName: string,
+    SubDivisionID: string,
+    SubDivisionShortName: string,
+    SubDivisionDescription: string,
+    IsCentralUnit: "Y" | "N",
+    CentralUnitID: string,
+    CentralUnitName: string,
+    DecimalPlaces: number
+  }

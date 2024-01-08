@@ -1,12 +1,18 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppDispatch } from "./store";
 
+import { callAPI } from "../services/callAPI";
+import { convertToGroupedList, convertToSubDivisionList } from "../utils/drawer.utils";
+import { updateMenuList, updateSubDivisionList } from "./drawer.slice";
+
 const globalSlice = createSlice({
     name: 'global',
     initialState: {
         darkMode: false,
-        userToken: undefined,
+        user: {},
         loading: false,
+        message: "",
+        status: "",
         toast: {
             type: "success",
             message: "",
@@ -17,8 +23,8 @@ const globalSlice = createSlice({
         toggleColorScheme: (state) => {
             state.darkMode = !state.darkMode
         },
-        updateUserToken: (state, action) => {
-            state.userToken = action.payload
+        updateUser: (state, action) => {
+            state.user = action.payload
         },
         loadingGlobal: (state, action) => {
             state.loading = action.payload
@@ -27,26 +33,45 @@ const globalSlice = createSlice({
             state.toast = action.payload
         }
     },
+    extraReducers(builder) {
+        builder.addCase(signIn.pending, (state) => {
+            state.loading = true
+            state.status = "pending"
+        }).addCase(signIn.fulfilled, (state, action: PayloadAction<any>) => {
+            state.user = action.payload;
+            state.loading = false
+            state.status = "success"
+            state.message = 'Login success'
+        }).addCase(signIn.rejected, (state, action) => {
+            state.loading = false
+            state.status = "error"
+            state.message = action.error.message ? action.error.message : "Login failed"
+        });
+    },
 })
 
 export default globalSlice
 
 export const {
     toggleColorScheme,
-    updateUserToken,
+    updateUser,
     loadingGlobal,
     showToast,
 } = globalSlice.actions;
 
 
-export function signIn(userToken: any) { //thunk function - action
-    return function signInThunk(dispatch: AppDispatch, getState: Function) {
-        dispatch(globalSlice.actions.loadingGlobal(true));
-        // Xử lý login - để tạm trong này cho có vẻ loading
-        setTimeout(() => {
-            dispatch(globalSlice.actions.loadingGlobal(false));
-            dispatch(globalSlice.actions.updateUserToken("Dat test token"));
-        }, 2000);
+export const signIn = createAsyncThunk('global/signIn', async (_, thunkAPI) => {
+    // 1. Get user by email
+    const user: any = await callAPI('PermissionService/GetUserByEmail?username=trung.vudinh@japfa.com&os=Windows&deviceName=N244-ITVDTRUNG&ipAddress=10.94.13.15')
+    const data = user
+    // 2. Get factory access of user
+    const factories: any = await callAPI('PermissionService/GetFactoryAccessOfUser?username=trung.vudinh@japfa.com')
+    const subDivisionList = convertToSubDivisionList(factories)
+    thunkAPI.dispatch(updateSubDivisionList(subDivisionList))
+    // 3. Get menu access of user
+    const menu: any = await callAPI('PermissionService/GetMenuAccessOfUser?username=trung.vudinh@japfa.com')
+    const menuList = convertToGroupedList(menu)
+    thunkAPI.dispatch(updateMenuList(menuList))
 
-    }
-}
+    return data;
+})

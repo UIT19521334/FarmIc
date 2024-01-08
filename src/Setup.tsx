@@ -3,7 +3,7 @@ import { PaperProvider, MD3DarkTheme, MD3LightTheme, adaptNavigationTheme, Snack
 import { useSelector } from 'react-redux';
 import { RootState } from './redux/store';
 import { darkScheme, lightScheme } from './themes/theme';
-import { StatusBar, Text, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import AppNavigator from './navigator/AppNavigator';
 import Loading from './components/Loading';
 
@@ -14,6 +14,7 @@ const Setup = () => {
         <PaperProvider theme={theme}>
             <Loading/>
             <AppNavigator/>
+            <Toast position='bottom'/>
         </PaperProvider>
     );
 };

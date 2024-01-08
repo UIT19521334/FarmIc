@@ -12,6 +12,10 @@ const store = configureStore({
         drawer: drawerSlice.reducer,
         global: globalSlice.reducer
     },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+        immutableCheck: { warnAfter: 128 },
+        serializableCheck: { warnAfter: 128 },
+    })
 });
 export type AppDispatch = typeof store.dispatch
 export const useAppDispatch: () => AppDispatch = useDispatch

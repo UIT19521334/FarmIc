@@ -1,5 +1,5 @@
 import { filter, groupBy, isNaN, map, meanBy, result, some, sum, sumBy } from 'lodash'
-import { IDrawer, ISubmenu } from '../types';
+import { IDrawer, IFactory, ISubDivision, ISubmenu } from '../types';
 
 export const convertToGroupedList = (arr : ISubmenu[]) => {
   const groupedByMenuGroup = groupBy(arr, 'MenuGroup');
@@ -10,6 +10,19 @@ export const convertToGroupedList = (arr : ISubmenu[]) => {
   }));
 
   return groupedMenuList;
+};
+
+export const convertToSubDivisionList = (arr : IFactory[]) => {
+  const groupedBySubDivisionID = groupBy(arr, 'SubDivisionID');
+
+  const groupedSubDivisionList = map(groupedBySubDivisionID, (group, SubDivisionID) => ({
+    SubDivisionID,
+    SubDivisionShortName: group[0].SubDivisionShortName,
+    SubDivisionDescription: group[0].SubDivisionDescription,
+    Factories: map(group, ({ SubDivisionID, ...rest }) => rest),
+  }));
+
+  return groupedSubDivisionList;
 };
 
 // This name is MaterialCommunityIcons  
