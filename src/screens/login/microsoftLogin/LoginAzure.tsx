@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React from 'react';
+import React, { useRef } from 'react';
 import { ADLoginView, ReactNativeAD } from './components';
 import { Alert } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -14,7 +14,6 @@ export default function LoginAzure() {
 
   const onLoginSuccess = async (credentials: any) => {
     try {
-      console.log('>>>',credentials[OUTLOOK].access_token);
       const strAccessToken = await credentials[OUTLOOK].access_token;
       AsyncStorage.setItem('userToken', JSON.stringify(strAccessToken));
       const userToken = JSON.stringify(strAccessToken);
@@ -33,16 +32,24 @@ export default function LoginAzure() {
     }
   };
 
-  const rAd = React.useRef(new ReactNativeAD({
-    client_id: CLIENT_ID,
-    tenant: "common",
-  })).current;
+  const rNativeAd = useRef(
+    new ReactNativeAD({
+      client_id: CLIENT_ID,
+      resources: [OUTLOOK],
+      client_secret: null,
+      login_hint: null,
+      prompt: null,
+      redirect_uri:null,
+      tenant: null,
+      token_uri: null
+    }),
+  ).current;
 
   return (
     <SafeAreaView style={{flex : 1}}>
       <ADLoginView
-        context={rAd}
-        onSuccess={onLoginSuccess}
+        context={rNativeAd}
+        onSuccess={(e: any) => onLoginSuccess(e)}
         hideAfterLogin
         needLogout
       />

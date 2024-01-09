@@ -1,5 +1,5 @@
 import { View, Text, StatusBar, Image, FlatList, StyleSheet, Animated } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../redux/store';
@@ -10,12 +10,22 @@ import slides from './slides';
 import { Dimensions } from 'react-native';
 import images from '../../assets/images/image';
 import Swiper from 'react-native-swiper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isString } from 'lodash';
 
 const { width, height } = Dimensions.get('screen');
 const LoginScreen = ({ navigation }: any) => {
     const theme = useTheme();
     const dispatch = useAppDispatch();
     const darkMode = useSelector((state: RootState) => state.global.darkMode);
+    // check if have userToken go to main screen
+    useEffect(() => {
+      const userToken = AsyncStorage.getItem("userToken");
+      if (userToken && isString(userToken)){
+        dispatch(signIn(userToken))
+      }
+    }, [])
+    
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <StatusBar translucent backgroundColor="rgba(0,0,0,0)" barStyle={darkMode ? 'light-content' : 'dark-content'} />

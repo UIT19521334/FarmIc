@@ -1,34 +1,40 @@
-// @flow
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable @typescript-eslint/camelcase */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Timer from 'react-timer-mixin';
-import CONST from './const.js';
-import log from './logger';
+import Timer from "react-timer-mixin"
+import type {
+  ADConfig,
+  ADCredentials,
+  GrantTokenResp,
+  ReactNativeADCredential,
+} from './types';
 
 const defaultTokenUrl = 'https://login.microsoftonline.com/common/oauth2/token';
 
-/**
- * Global static hash map which stores contexts of different ReactNativeAD context,
- * which hash key is  {ReactNativeAD.config#client_id}
- * @type {map<string, ReactNativeAD>}
- */
-const _contexts = {};
+const _contexts : any = {};
+
+export const CONST = {
+  GRANT_TYPE: {
+    AUTHORIZATION_CODE: 'authorization_code',
+    REFRESH_TOKEN: 'refresh_token',
+  },
+};
 
 export default class ReactNativeAD {
-  config;
+  config: ADConfig;
 
-  credentials;
+  credentials: ADCredentials | any;
 
-  static getContext(client_id) {
+  static getContext(client_id: string): ReactNativeAD {
     return _contexts[client_id];
   }
 
-  static removeContext(client_id) {
+  static removeContext(client_id: string) {
     delete _contexts[client_id];
   }
 
-  static ResourceOwnerPasswordCredential(
-    data,
-  ) {
+  static ResourceOwnerPasswordCredential(data : any) {
     const url = `https://login.windows.net/${data.tenant_id}/oauth2/token`;
     const {resource, client_id, username, password} = data;
     const urlencode = [
@@ -42,9 +48,9 @@ export default class ReactNativeAD {
     fetch(url, {method: 'POST', body: urlencode});
   }
 
-  constructor(config) {
-    if (config === null || config === void 0) {
-      throw new Error('Invalid ADConfig object', config);
+  constructor(config: ADConfig) {
+    if (config === null || config === undefined) {
+      throw new Error('Invalid ADConfig object');
     }
     if (typeof config.client_id !== 'string') {
       throw new Error('client_id is not provided.');
@@ -57,13 +63,11 @@ export default class ReactNativeAD {
     _contexts[config.client_id] = this;
   }
 
-  getConfig() {
-    log.verbose('getConfig', this.config);
+  getConfig(): ADConfig {
     return this.config;
   }
 
-  getCredentials() {
-    log.verbose('getCredentials', this.credentials);
+  getCredentials(): ADCredentials | null {
     return this.credentials;
   }
 
@@ -76,10 +80,9 @@ export default class ReactNativeAD {
    *         as its value.
    * @return {Promise} .
    */
-  saveCredentials(data) {
+  saveCredentials(data: ADCredentials): Promise<any> {
     return new Promise((resolve, reject) => {
       const pairs = [];
-      log.verbose('saveCredentials', data);
       for (const resource in data) {
         if (resource && data[resource]) {
           pairs.push([
@@ -102,10 +105,10 @@ export default class ReactNativeAD {
    * @param  {string} resource The resource ID.
    * @return {?string} Access token of the resource.
    */
-  getAccessToken(resource) {
-    let result = null;
+  getAccessToken(resource: string): string | null {
+    let result: ReactNativeADCredential | null = null;
     result = this.credentials ? this.credentials[resource] : null;
-    log.debug('getAccessToken', resource, result);
+
     if (result !== null) {
       return result.access_token;
     }
@@ -119,24 +122,18 @@ export default class ReactNativeAD {
    * @param  {string} resource  Resource Id.
    * @return {Promise<string>} A promise with access_token string.
    */
-  assureToken(resource) {
+  assureToken(resource: string): Promise<string> {
     const context = this;
     // Check credential of the resource
     return this.checkCredential(resource).then(
-      (cred) => {
-        if (!cred) {
-          return context.refreshToken(resource);
-        }
+      (cred: ReactNativeADCredential | null) => {
+        if (!cred) return context.refreshToken(resource);
         // Credentials found, check if token expired.
-
         const expires_on = cred.expires_on * 1000;
         // Token not expired, resolve token
-        if (Date.now() - expires_on <= -60000) {
+        if (Date.now() - expires_on <= -60000)
           return Promise.resolve(cred.access_token);
-        }
         // Token expired, call refresh token
-
-        log.debug('cached token expired, refresh token.');
         return context.refreshToken(resource);
       },
     );
@@ -148,10 +145,10 @@ export default class ReactNativeAD {
    * @param  {string} resource Resource id.
    * @return {Promise<string>} When success, promise resolves new `access_token`
    */
-  refreshToken(resourceId) {
+  refreshToken(resourceId: string): Promise<string> {
     return new Promise((resolve, reject) => {
       this.checkCredential(resourceId).then(
-        (cred) => {
+        (cred: ReactNativeADCredential | null) => {
           const config = {
             refresh_token: cred ? cred.refresh_token : null,
             client_id: this.config.client_id,
@@ -159,20 +156,12 @@ export default class ReactNativeAD {
             resource: resourceId,
           };
           let grantType = CONST.GRANT_TYPE.REFRESH_TOKEN;
-          if (!cred) {
-            grantType = CONST.GRANT_TYPE.AUTHORIZATION_CODE;
-          }
-          log.debug(
-            'refresh token with config=',
-            config,
-            `grant_type=${grantType}`,
-          );
+          if (!cred) grantType = CONST.GRANT_TYPE.AUTHORIZATION_CODE;
           this.grantAccessToken(grantType, config)
-            .then((resp) => {
+            .then((resp: GrantTokenResp) => {
               resolve(resp.response.access_token);
             })
-            .catch(err => {
-              log.warn(err);
+            .catch((err) => {
               reject(err);
             });
         },
@@ -186,12 +175,10 @@ export default class ReactNativeAD {
    * @return {Promise<ReactNativeADCredential | null>} When credential does not exist, resolve
    *                           `null`, otherwise resolve `ReactNativeADCredential`
    */
-  checkCredential(resourceId) {
+  checkCredential(resourceId: string): Promise<ReactNativeADCredential | null> {
     const context = this;
     return new Promise((resolve, reject) => {
       const resourceKey = _getResourceKey(context.config, resourceId);
-      // console.log('resourceKey: ');
-      console.log(resourceKey);
       const cachedCred = context.credentials[resourceId];
       resolve(cachedCred);
     });
@@ -206,15 +193,12 @@ export default class ReactNativeAD {
    * @param  {object} params Urlencoded form data in hashmap format
    * @return {Promise<GrantTokenResp>}  .
    */
-  grantAccessToken(grantType, params) {
+  grantAccessToken(grantType: string, params: any): Promise<GrantTokenResp> {
     // If resource is null or undefined, use `common` by default
     params.resource = params.resource || 'common';
-    if (grantType === 'password') {
-      params.client_id = this.config.client_id;
-    }
+    if (grantType === 'password') params.client_id = this.config.client_id;
     return new Promise((resolve, reject) => {
       try {
-        log.debug(`${grantType} access token for resource ${params.resource}`);
         const tm = Timer.setTimeout(() => {
           reject('time out');
         }, 15000);
@@ -228,12 +212,12 @@ export default class ReactNativeAD {
           },
           body,
         })
-          .then(response => {
+          .then((response) => {
             Timer.clearTimeout(tm);
             return response.text();
           })
-          .then(res => {
-            const cred = {
+          .then((res) => {
+            const cred: GrantTokenResp = {
               resource: params.resource,
               response: JSON.parse(res.replace('access_token=', '')),
             };
@@ -242,15 +226,10 @@ export default class ReactNativeAD {
             // save to persistent context
             const cacheKey = _getResourceKey(this.config, params.resource);
             if (cred.response.access_token) {
-              log.debug(`save credential ${cacheKey} `, cred.response);
               AsyncStorage.setItem(cacheKey, JSON.stringify(cred.response));
               // truncate prefix
               resolve(cred);
             } else {
-              log.debug(
-                `failed to grant token for resource ${cacheKey}`,
-                cred.response,
-              );
               reject(cred);
             }
           })
@@ -268,7 +247,7 @@ export default class ReactNativeAD {
  * @param  {string} resourceId The resource id.
  * @return {string} Result of hash key.
  */
-function _getResourceKey(config, resourceId) {
+function _getResourceKey(config: ADConfig, resourceId: string): string {
   return `${config.client_id}.${resourceId}`;
 }
 
@@ -278,7 +257,7 @@ function _getResourceKey(config, resourceId) {
  * @param  {Object} params Object which contains props.
  * @return {string} Result form data string.
  */
-function _serialize(params) {
+function _serialize(params: Record<string, any>): string {
   let paramStr = '';
   for (const prop in params) {
     if (

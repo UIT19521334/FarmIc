@@ -4,7 +4,7 @@ import { AppDispatch } from "./store";
 import { callAPI } from "../services/callAPI";
 import { convertToGroupedList, convertToSubDivisionList } from "../utils/drawer.utils";
 import { updateMenuList, updateSubDivisionList } from "./drawer.slice";
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode";
 
 const globalSlice = createSlice({
     name: 'global',
@@ -47,7 +47,7 @@ const globalSlice = createSlice({
             state.loading = false
             state.status = "error"
             state.message = action.error.message ? action.error.message : "Login failed"
-            console.log("object", action.error.message);
+            console.error("SignIn", action.error.message);
         });
     },
 })
