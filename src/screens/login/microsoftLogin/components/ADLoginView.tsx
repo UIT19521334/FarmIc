@@ -171,13 +171,11 @@ const AdLoginView = ({
     if (code !== null) {
       setLock(true);
       code = String(code[0]).replace(/(\?|\&)?code\=/, '');
+      
       // this.setState({visible: !this.props.hideAfterLogin});
       if (onVisibilityChange) {
         onVisibilityChange(false);
       }
-      
-      console.log(`code: ${code}`);
-      
       getResourceAccessToken(code).catch();
       return true;
     }

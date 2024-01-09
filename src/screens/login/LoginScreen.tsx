@@ -12,6 +12,7 @@ import images from '../../assets/images/image';
 import Swiper from 'react-native-swiper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isString } from 'lodash';
+import Toast from 'react-native-toast-message';
 
 const { width, height } = Dimensions.get('screen');
 const LoginScreen = ({ navigation }: any) => {
@@ -20,12 +21,24 @@ const LoginScreen = ({ navigation }: any) => {
     const darkMode = useSelector((state: RootState) => state.global.darkMode);
     // check if have userToken go to main screen
     useEffect(() => {
-      const userToken = AsyncStorage.getItem("userToken");
-      if (userToken && isString(userToken)){
-        dispatch(signIn(userToken))
-      }
-    }, [])
-    
+        const getUserToken = async () => {
+            try {
+                const userToken: string | null = await AsyncStorage.getItem('userToken');
+
+                if (userToken) {
+                    dispatch(signIn(userToken));
+                }
+            } catch (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: `Error retrieving user token: ${error}`,
+                });
+            }
+        };
+
+        getUserToken();
+    }, []);
+
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <StatusBar translucent backgroundColor="rgba(0,0,0,0)" barStyle={darkMode ? 'light-content' : 'dark-content'} />
@@ -54,7 +67,11 @@ const LoginScreen = ({ navigation }: any) => {
                     </Swiper>
                 </View>
                 <View style={styles.footer}>
-                    <Button labelStyle={styles.btn_label} buttonColor={theme.colors.primaryContainer} uppercase onPress={() => navigation.navigate("LoginAzure")}>
+                    <Button
+                        labelStyle={styles.btn_label}
+                        buttonColor={theme.colors.primaryContainer}
+                        uppercase
+                        onPress={() => navigation.navigate('LoginAzure')}>
                         Login with email japfa
                     </Button>
                 </View>

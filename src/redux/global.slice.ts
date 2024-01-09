@@ -5,6 +5,8 @@ import { callAPI } from "../services/callAPI";
 import { convertToGroupedList, convertToSubDivisionList } from "../utils/drawer.utils";
 import { updateMenuList, updateSubDivisionList } from "./drawer.slice";
 import jwtDecode from "jwt-decode";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { IUser } from "../types";
 
 const globalSlice = createSlice({
     name: 'global',
@@ -63,22 +65,27 @@ export const {
 
 
 export const signIn = createAsyncThunk('global/signIn', async (userToken : string, thunkAPI) => {
-    // 0. Login with userToken
-    console.log(userToken);
-    const user_info = jwtDecode(userToken);
-    console.log(user_info);
-    return user_info
-    // 1. Get user by email
-    // const user: any = await callAPI('PermissionService/GetUserByEmail?username=trung.vudinh@japfa.com&os=Windows&deviceName=N244-ITVDTRUNG&ipAddress=10.94.13.15')
-    // const data = user
-    // // 2. Get factory access of user
-    // const factories: any = await callAPI('PermissionService/GetFactoryAccessOfUser?username=trung.vudinh@japfa.com')
-    // const subDivisionList = convertToSubDivisionList(factories)
-    // thunkAPI.dispatch(updateSubDivisionList(subDivisionList))
-    // // 3. Get menu access of user
-    // const menu: any = await callAPI('PermissionService/GetMenuAccessOfUser?username=trung.vudinh@japfa.com')
-    // const menuList = convertToGroupedList(menu)
-    // thunkAPI.dispatch(updateMenuList(menuList))
+    // 1. Login with userToken
+    const user_info : IUser = await jwtDecode(userToken)
+    const email = user_info.upn
+    console.log("email",email);
 
-    // return data;
+    // 2. Get factory access of user
+    const factories: any = await callAPI(`PermissionService/GetFactoryAccessOfUser?username=${email}`)
+    const subDivisionList = convertToSubDivisionList(factories)
+    thunkAPI.dispatch(updateSubDivisionList(subDivisionList))
+
+    // 3. Get menu access of user
+    const menu: any = await callAPI(`PermissionService/GetMenuAccessOfUser?username=${email}`)
+    const menuList = convertToGroupedList(menu)
+    thunkAPI.dispatch(updateMenuList(menuList))
+
+    return user_info;
 })
+
+export function signOut() { //thunk function - action
+    return function signOutThunk(dispatch: AppDispatch, getState: Function) {
+        AsyncStorage.removeItem("userToken");
+        dispatch(updateUser({}));
+    }
+}
