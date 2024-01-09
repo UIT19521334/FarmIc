@@ -1,18 +1,14 @@
 import { View, Text, Button } from 'react-native';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { addDrawer, getDrawerList } from '../../redux/drawer.slice';
-import { RootState, useAppDispatch } from '../../redux/store';
-import { ThunkDispatch } from 'redux-thunk';
-import { IDrawer } from '../../types';
+import { useAppDispatch } from '../../redux/store';
+import { updateUser } from '../../redux/global.slice';
 const ProfileScreen = () => {
   const dispatch = useAppDispatch();
 
-  const drawerList = useSelector((state: RootState) => state.drawer.drawerList);
   return (
     <View>
       <Text>ProfileScreen</Text>
-      <Button title='Upload drawer' onPress={()=> console.log("object")}/>
+      <Button title='Sign out' onPress={()=> dispatch(updateUser({}))}/>
     </View>
   );
 };

@@ -4,6 +4,7 @@ import { AppDispatch } from "./store";
 import { callAPI } from "../services/callAPI";
 import { convertToGroupedList, convertToSubDivisionList } from "../utils/drawer.utils";
 import { updateMenuList, updateSubDivisionList } from "./drawer.slice";
+import { jwtDecode } from "jwt-decode";
 
 const globalSlice = createSlice({
     name: 'global',
@@ -46,6 +47,7 @@ const globalSlice = createSlice({
             state.loading = false
             state.status = "error"
             state.message = action.error.message ? action.error.message : "Login failed"
+            console.log("object", action.error.message);
         });
     },
 })
@@ -60,18 +62,23 @@ export const {
 } = globalSlice.actions;
 
 
-export const signIn = createAsyncThunk('global/signIn', async (_, thunkAPI) => {
+export const signIn = createAsyncThunk('global/signIn', async (userToken : string, thunkAPI) => {
+    // 0. Login with userToken
+    console.log(userToken);
+    const user_info = jwtDecode(userToken);
+    console.log(user_info);
+    return user_info
     // 1. Get user by email
-    const user: any = await callAPI('PermissionService/GetUserByEmail?username=trung.vudinh@japfa.com&os=Windows&deviceName=N244-ITVDTRUNG&ipAddress=10.94.13.15')
-    const data = user
-    // 2. Get factory access of user
-    const factories: any = await callAPI('PermissionService/GetFactoryAccessOfUser?username=trung.vudinh@japfa.com')
-    const subDivisionList = convertToSubDivisionList(factories)
-    thunkAPI.dispatch(updateSubDivisionList(subDivisionList))
-    // 3. Get menu access of user
-    const menu: any = await callAPI('PermissionService/GetMenuAccessOfUser?username=trung.vudinh@japfa.com')
-    const menuList = convertToGroupedList(menu)
-    thunkAPI.dispatch(updateMenuList(menuList))
+    // const user: any = await callAPI('PermissionService/GetUserByEmail?username=trung.vudinh@japfa.com&os=Windows&deviceName=N244-ITVDTRUNG&ipAddress=10.94.13.15')
+    // const data = user
+    // // 2. Get factory access of user
+    // const factories: any = await callAPI('PermissionService/GetFactoryAccessOfUser?username=trung.vudinh@japfa.com')
+    // const subDivisionList = convertToSubDivisionList(factories)
+    // thunkAPI.dispatch(updateSubDivisionList(subDivisionList))
+    // // 3. Get menu access of user
+    // const menu: any = await callAPI('PermissionService/GetMenuAccessOfUser?username=trung.vudinh@japfa.com')
+    // const menuList = convertToGroupedList(menu)
+    // thunkAPI.dispatch(updateMenuList(menuList))
 
-    return data;
+    // return data;
 })

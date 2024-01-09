@@ -1,38 +1,42 @@
-import { View, StatusBar, ImageBackground, StyleSheet, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { View, StatusBar, StyleSheet, ScrollView } from 'react-native';
 import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { IDrawer, IFactory, ISubDivision, ISubmenu } from '../types';
-import { Avatar, Button, Drawer, Icon, List, Searchbar, Text } from 'react-native-paper';
+import { IDrawer, IFactory, ISubmenu } from '../types';
+import { Avatar, Drawer, List,Text } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
 import images from '../assets/images/image';
 import { getNameIcon } from '../utils/drawer.utils';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { updateFactory, updateSubDivisionList } from '../redux/drawer.slice';
-import { find } from 'lodash';
+import { updateFactory } from '../redux/drawer.slice';
 import { Dropdown } from 'react-native-element-dropdown';
+
 const CustomDrawer = (props: DrawerContentComponentProps) => {
     const theme = useTheme();
     const dispatch = useDispatch();
+
+    // Redux state
     const menuList = useSelector((state: RootState) => state.drawer.menuList);
     const subDivisionList = useSelector((state: RootState) => state.drawer.subDivisionList);
     const darkMode = useSelector((state: RootState) => state.global.darkMode);
 
+    // State for controlling menu item dropdowns
     const [activeSubmenu, setActiveSubmenu] = useState('');
     const [expandedMenu, setExpandedMenu] = useState(-1);
-
     const [subDivision, setSubDivision] = useState(subDivisionList[0]);
     const [factory, setFactory] = useState<IFactory>();
     const [factories, setFactories] = useState<IFactory[]>([]);
 
     useEffect(() => {
-        const result : any = subDivisionList[0]?.Factories;
+        // Initialize factories based on the first sub-division
+        const result: any = subDivisionList[0]?.Factories;
         setFactories(result);
         setFactory(result[0]);
         dispatch(updateFactory(result[0]));
     }, []);
 
+    // Handle selecting a sub-division from the dropdown
     const handleSelectSubDivision = (value: any) => {
         setSubDivision(value);
         const result = value?.Factories;
@@ -41,6 +45,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
         dispatch(updateFactory(result[0]));
     };
 
+    // State for controlling focus on dropdowns
     const [isFocus, setIsFocus] = useState(false);
     const [isFocus2, setIsFocus2] = useState(false);
 
@@ -48,6 +53,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
         <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
             <StatusBar translucent backgroundColor="rgba(0,0,0,0)" barStyle={darkMode ? 'light-content' : 'dark-content'} />
 
+            {/* Header section */}
             <View
                 style={{
                     paddingHorizontal: 20,
@@ -65,18 +71,8 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                     Nguyen Duc Chi Dat
                 </Text>
             </View>
-            {/* <View
-                style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    paddingHorizontal: 20,
-                    backgroundColor: theme.colors.surfaceVariant,
-                    borderBottomColor: theme.colors.outline,
-                    borderBottomWidth: 1
-                }}>
-                <FontAwesome name="database" style={{ height: 40, width: 40 }} size={24} color={'#000'} />
-                
-            </View> */}
+
+            {/* Sub-division dropdown */}
             <Dropdown
                 activeColor={theme.colors.primaryContainer}
                 itemTextStyle={{ color: theme.colors.primary }}
@@ -104,6 +100,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                 )}
             />
 
+            {/* Factory dropdown */}
             <Dropdown
                 activeColor={theme.colors.primaryContainer}
                 itemTextStyle={{ color: theme.colors.primary }}
@@ -136,6 +133,8 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                     />
                 )}
             />
+
+            {/* Menu list section */}
             <ScrollView>
                 <Drawer.Section showDivider={false} style={{ backgroundColor: theme.colors.background }}>
                     {menuList.map((item: IDrawer, index: number) => (
@@ -154,7 +153,6 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                                     label={submenu.MenuName}
                                     active={submenu.MenuID === activeSubmenu}
                                     onPress={() => setActiveSubmenu(submenu.MenuID)}
-                                    // left={props => <List.Icon {...props} icon={submenu.MenuIcon ? submenu.MenuIcon : ""} />}
                                 />
                             ))}
                         </List.Accordion>
@@ -166,28 +164,13 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
 };
 
 export default CustomDrawer;
+
+// Styles
 const styles = StyleSheet.create({
-    container: {
-        padding: 0,
-    },
     dropdown: {
         height: 50,
         color: '#000',
         paddingHorizontal: 8,
-    },
-    icon: {
-        marginRight: 10,
-        color: '#000',
-    },
-    label: {
-        position: 'absolute',
-        backgroundColor: '#000',
-        color: '#000',
-        left: 22,
-        top: 8,
-        zIndex: 999,
-        paddingHorizontal: 8,
-        fontSize: 14,
     },
     placeholderStyle: {
         fontSize: 16,

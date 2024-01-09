@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { View } from 'react-native';
 import { isEmpty } from 'lodash';
+import LoginAzure from '../screens/login/microsoftLogin/LoginAzure';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -24,10 +25,19 @@ export default function AppNavigator() {
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {!isEmpty(user) ? <Stack.Screen name="MainScreen" component={TabNavigator} /> : <Stack.Screen name="Login" component={LoginScreen} />}
+                {!isEmpty(user) ? <Stack.Screen name="Authorized" component={TabNavigator} /> : <Stack.Screen name="Unauthorized" component={Unauthorized} />}
             </Stack.Navigator>
         </NavigationContainer>
     );
+}
+
+function Unauthorized () {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Login'>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="LoginAzure" component={LoginAzure} />
+        </Stack.Navigator>
+    )
 }
 
 function TabNavigator() {
