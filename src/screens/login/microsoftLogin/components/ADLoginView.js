@@ -38,7 +38,6 @@ export default class ADLoginView extends React.Component {
             throw new Error('Property `context` of ADLoginView should be an instance of ReactNativeAD, but got ' + this.props.context);
         }
         const { context } = this.props;
-        console.log('context', context);
         const { tenant } = context.getConfig();
         this._needRedirect = this.props.needLogout || false;
         this.state = {

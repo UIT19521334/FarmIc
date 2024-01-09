@@ -69,10 +69,10 @@ export default class ReactNativeAD {
 
   /**
    * Save login credentials to async storage, with key = <client id>.<resource id>.
-   * For example, client_id = eabc-123 resource=http://graph.microsoft.com will
-   * be stored in an entry with key `eabc-123.http://graph.microsoft.com`.
+   * For example, client_id = abc-123 resource=http://graph.microsoft.com will
+   * be stored in an entry with key `abc-123.http://graph.microsoft.com`.
    * @param  {ADCredentials} data  Credentials key-value pair,
-   *         this object uses resourece as its key and `ReactNativeADCredential`
+   *         this object uses resource as its key and `ReactNativeADCredential`
    *         as its value.
    * @return {Promise} .
    */
@@ -88,7 +88,7 @@ export default class ReactNativeAD {
           ]);
         } else {
           console.warn(
-            `counld not save credential for ${resource}=${data[resource]} for its key/value is null/undefeind.`,
+            `could not save credential for ${resource}=${data[resource]} for its key/value is null/undefine.`,
           );
         }
       }
@@ -127,7 +127,7 @@ export default class ReactNativeAD {
         if (!cred) {
           return context.refreshToken(resource);
         }
-        // Credaentials found, check if token expired.
+        // Credentials found, check if token expired.
 
         const expires_on = cred.expires_on * 1000;
         // Token not expired, resolve token
@@ -202,7 +202,7 @@ export default class ReactNativeAD {
    * success, it stores credentials in format of `ReactNativeADCredential`,
    * in both ReactNativeAD.credentials and AsyncStorage.
    * @param  {string {enum: authorization_code, refresh_token, password}} grantType
-   * Responsed from ReactNativeAD#handleADToken.
+   * Response from ReactNativeAD#handleADToken.
    * @param  {object} params Urlencoded form data in hashmap format
    * @return {Promise<GrantTokenResp>}  .
    */

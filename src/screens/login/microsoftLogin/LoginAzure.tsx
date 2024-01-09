@@ -14,6 +14,7 @@ export default function LoginAzure() {
 
   const onLoginSuccess = async (credentials: any) => {
     try {
+      console.log('>>>',credentials[OUTLOOK].access_token);
       const strAccessToken = await credentials[OUTLOOK].access_token;
       AsyncStorage.setItem('userToken', JSON.stringify(strAccessToken));
       const userToken = JSON.stringify(strAccessToken);
@@ -32,10 +33,15 @@ export default function LoginAzure() {
     }
   };
 
+  const rAd = React.useRef(new ReactNativeAD({
+    client_id: CLIENT_ID,
+    tenant: "common",
+  })).current;
+
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex : 1}}>
       <ADLoginView
-        context={ReactNativeAD.getContext(CLIENT_ID)}
+        context={rAd}
         onSuccess={onLoginSuccess}
         hideAfterLogin
         needLogout
